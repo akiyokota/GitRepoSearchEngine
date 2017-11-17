@@ -14,6 +14,8 @@ public class GitRepoSearchResponse extends ResponseBase {
     private List<GitRepoInfo> gitRepos;
 
     public GitRepoSearchResponse () {
+        this.setStatus("");
+        this.setMsg("");
         this.gitRepos = new LinkedList<GitRepoInfo>();
     }
 

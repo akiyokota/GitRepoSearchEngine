@@ -55,7 +55,6 @@ public class GitUserSearchService {
         try {
             GitRepoSearchRequest gitRepoSearchRequest = JSONSerializer.deserialize(request, GitRepoSearchRequest.class);
             response = gitHandler.getGitRepos(gitRepoSearchRequest);
-            System.out.println(response);
 
         } catch (GitUserSearcherException gse) {
             LOG.error("An Exception has occured in with error: " + gse.getMessage());
@@ -67,8 +66,6 @@ public class GitUserSearchService {
         }
 
         return JSONSerializer.serialize(response);
-        //return "OK";
-        //return response;
     }
 
 }

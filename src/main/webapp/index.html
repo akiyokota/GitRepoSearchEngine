@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html >
+<html ng-app="main">
 <head>
 
     <title>Git User Searcher</title>
@@ -9,23 +9,92 @@
     <meta http-equiv=”CACHE-CONTROL” content=”NO-CACHE”>
 
     <!-- styles -->
+    <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/angular-loading-bar/0.9.0/loading-bar.min.css'
+          type='text/css' media='all'/>
+    <link rel="stylesheet" type="text/css" href="src/modules/main/main.css">
 
     <!-- libraries -->
-
+    <script src="https://code.angularjs.org/1.4.8/angular.min.js"></script>
+    <script src="src/libs/angular-ui-router.js"></script>
+    <script type='text/javascript'
+            src='//cdnjs.cloudflare.com/ajax/libs/angular-loading-bar/0.9.0/loading-bar.min.js'></script>
 
     <!-- javascripts -->
+    <script src="src/modules/main/main.js"></script>
+    <script src="src/modules/httpCaller/httpCaller.js"></script>
 
 
 </head>
 
 
 <body>
-<div class="container">
+<div class="container" ng-controller="mainController">
     <div class="head">
+        <h1>Welcome To Git User Searcher!</h1>
 
-    <h1> test </h1>
+    </div>
+
     <div class="bodyContainer">
-        <!--<div ui-view></div>-->
+        <p>Type in the git user name below and click search to see their repositories!</p>
+
+        <div class="search">
+            <input ng-model="gitUserId">
+            <button ng-click="search(gitUserId)">Search</button>
+            <button ng-click="gitRepos=[]; gitUserId=''">Clear</button>
+
+        </div>
+
+        <div ng-show="gitRepos.length>0">
+
+            <button ng-disabled="(currentPage+1) < 2" ng-click="previousPage()">
+                Previous
+            </button>
+            {{ getCurrentPage(filterKeyword) }}{{currentPage+1}}/{{numberOfPages(filterKeyword)}}
+            <button ng-disabled="(currentPage+1) >= numberOfPages()" ng-click="nextPage()">
+                Next
+            </button>
+            Reposotiry Per Page:
+            <select ng-model="orderPerPage" ng-options="pageOption for pageOption in orderPerPageOptions"></select>
+
+            <br>
+            Result filter: <input ng-model="filterKeyword">
+
+            <table class="gitRepo">
+                <thead>
+                <th ng-click="changeSortFilter(constants.colRespositoryName)">
+                    Repository Name
+                    <span ng-show="sortType=='{{constants.colRespositoryName}}' && sortReverse">&#8593;</span>
+                    <span ng-show="sortType=='{{constants.colRespositoryName}}' && !sortReverse">&#8595;</span>
+                </th>
+                <th ng-click="changeSortFilter(constants.colRepositoryUrl)">
+                    Repository URL
+                    <span ng-show="sortType=='{{constants.colRepositoryUrl}}' && sortReverse">&#8593;</span>
+                    <span ng-show="sortType=='{{constants.colRepositoryUrl}}' && !sortReverse">&#8595;</span>
+                </th>
+                <th ng-click="changeSortFilter(constants.colOwnerName)">
+                    Owner name
+                    <span ng-show="sortType=='{{constants.colOwnerName}}' && sortReverse">&#8593;</span>
+                    <span ng-show="sortType=='{{constants.colOwnerName}}' && !sortReverse">&#8595;</span>
+                </th>
+                <th ng-click="changeSortFilter(onstants.colOwnerAvatar)">
+                    Owner Avatar
+                    <span ng-show="sortType=='{{constants.colOwnerAvatar}}' && sortReverse">&#8593;</span>
+                    <span ng-show="sortType=='{{constants.colOwnerAvatar}}' && !sortReverse">&#8595;</span>
+                </th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="gitRepo in gitRepos
+                                | resultFilter: filterKeyword
+                                | orderBy:sortType:sortReverse
+                                | limitTo: orderPerPage : ( currentPage *  orderPerPage )">
+                    <td>{{gitRepo.name}}</td>
+                    <td><a ng-click="openLink(gitRepo.html_url)">{{gitRepo.html_url}}</a></td>
+                    <td>{{gitRepo.owner.login}}</td>
+                    <td><img src="{{gitRepo.owner.avatar_url}}" height="25" width="25"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>

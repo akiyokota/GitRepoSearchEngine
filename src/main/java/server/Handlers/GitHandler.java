@@ -18,6 +18,7 @@ import java.util.List;
 @Component
 public class GitHandler {
     private static final Logger LOG = Logger.getLogger(GitHandler.class);
+    private static final String NO_RESULT_FOUND = "No result is found with your search keyword(s)";
 
     @Autowired
     private GitClient gitClient;
@@ -27,7 +28,14 @@ public class GitHandler {
 
         try {
             List<GitRepoInfo> gitRepos = gitClient.getGitUserRepo(gitRepoSearchRequest.getUserId());
-            response = new GitRepoSearchResponse(GitUserSearcherCode.SUCCESS.toString(), "", gitRepos);
+
+            if(gitRepos.size()<1) {
+                response = new GitRepoSearchResponse(GitUserSearcherCode.EMPTY_RESULT.toString()
+                        , NO_RESULT_FOUND, gitRepos);
+            } else {
+
+                response = new GitRepoSearchResponse(GitUserSearcherCode.SUCCESS.toString(), "", gitRepos);
+            }
 
         } catch (GitUserSearcherException gse) {
             throw new GitUserSearcherException(gse.getMessage(), gse.getErrorCode());

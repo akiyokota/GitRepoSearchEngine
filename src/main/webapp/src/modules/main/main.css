@@ -1,0 +1,63 @@
+/* mouse over link */
+.gitRepo a:hover {
+    font-weight: bold;
+}
+
+/* selected link */
+.gitRepo a:active {
+    color: green;
+}
+
+.gitRepo a {
+    color: blue;
+    text-decoration: underline;
+}
+
+.gitRepo {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.gitRepo td, .gitRepo th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.gitRepo tr:nth-child(even){background-color: #f2f2f2;}
+
+.gitRepo tr:hover {background-color: #ddd;}
+
+.gitRepo th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: deepskyblue;
+    color: white;
+}
+
+.search input {
+    height: 20px;
+    width: 300px;
+}
+
+.search button {
+    border: 1px solid #0066cc;
+    background-color: #0099cc;
+    color: #ffffff;
+    padding: 5px 10px;
+}
+
+.search button:hover {
+    border: 1px solid #0099cc;
+    background-color: #00aacc;
+    color: #ffffff;
+    padding: 5px 10px;
+}
+
+.search button:disabled,
+.search button[disabled]{
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+}
