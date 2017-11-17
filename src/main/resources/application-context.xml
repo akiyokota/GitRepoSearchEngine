@@ -39,6 +39,6 @@
     <!--====================================================================-->
          <!--Application beans-->
     <!--====================================================================-->
-    <context:component-scan base-package="Server"/>
+    <context:component-scan base-package="server"/>
 
 </beans>
