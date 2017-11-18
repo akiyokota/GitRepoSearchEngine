@@ -6,11 +6,12 @@ import org.springframework.stereotype.Component;
 import server.bindings.git.GitRepoInfo;
 import server.bindings.git.GitRepoSearchRequest;
 import server.bindings.git.GitRepoSearchResponse;
+import server.bindings.git.GitRepoSearchResult;
 import server.clients.GitClient;
 import server.enums.GitUserSearcherCode;
 import server.exceptions.GitUserSearcherException;
+import server.util.GitUserSearcherConstants;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -28,17 +29,35 @@ public class GitHandler {
         GitRepoSearchResponse response = null;
 
         try {
-            List<GitRepoInfo> gitRepos = new LinkedList<GitRepoInfo>();
-            for(String userId : gitRepoSearchRequest.getUserInput()) {
-                gitRepos.addAll(gitClient.getGitUserRepo(userId));
-            }
+              validateRequest(gitRepoSearchRequest);
 
-            if(gitRepos.size()<1) {
+            Integer repoCount = null;
+            List<GitRepoInfo> repoList = null;
+
+              switch(gitRepoSearchRequest.getSearchCriteria()) {
+                  case GitUserSearcherConstants.SEARCH_CRITERIA_REPOS:
+                      GitRepoSearchResult gitRepoSearchResult =
+                              gitClient.getGitRepoSearchWithKeywords(gitRepoSearchRequest);
+                      repoCount = gitRepoSearchResult.getTotal_count();
+                      repoList = gitRepoSearchResult.getItems();
+                      break;
+                  case GitUserSearcherConstants.SEARCH_CRITERIA_USERS:
+                      repoCount = gitClient.getRepoCountForUser(gitRepoSearchRequest.getUserInput());
+                      repoList = gitClient.getGitUserRepo(gitRepoSearchRequest);
+                      break;
+                  default:
+                      throw new GitUserSearcherException("Searching Criteria not recognized",
+                              GitUserSearcherCode.INVALID_REQUEST);
+              }
+
+
+            if(repoList.size()<1) {
                 response = new GitRepoSearchResponse(GitUserSearcherCode.EMPTY_RESULT.toString()
-                        , NO_RESULT_FOUND, gitRepos);
+                        , NO_RESULT_FOUND, repoList, 0);
             } else {
 
-                response = new GitRepoSearchResponse(GitUserSearcherCode.SUCCESS.toString(), "", gitRepos);
+                response = new GitRepoSearchResponse(GitUserSearcherCode.SUCCESS.toString(), ""
+                        , repoList, repoCount);
             }
 
         } catch (GitUserSearcherException gse) {
@@ -52,5 +71,19 @@ public class GitHandler {
 
         return response;
     }
+
+    private void validateRequest (GitRepoSearchRequest gitRepoSearchRequest) {
+        if(gitRepoSearchRequest==null)
+            throw new GitUserSearcherException("Request cannot be empty", GitUserSearcherCode.INVALID_REQUEST);
+        if(gitRepoSearchRequest.getUserInput()==null || gitRepoSearchRequest.getUserInput().trim().isEmpty())
+            throw new GitUserSearcherException("User input cannot be empty", GitUserSearcherCode.INVALID_REQUEST);
+        if(gitRepoSearchRequest.getSearchCriteria()==null || gitRepoSearchRequest.getSearchCriteria().trim().isEmpty())
+            throw new GitUserSearcherException("Search Criteria cannot be empty", GitUserSearcherCode.INVALID_REQUEST);
+        if(gitRepoSearchRequest.getPage()==null || gitRepoSearchRequest.getPage()<1)
+            throw new GitUserSearcherException("Page cannot be empty", GitUserSearcherCode.INVALID_REQUEST);
+        if(gitRepoSearchRequest.getPerPage()==null || gitRepoSearchRequest.getPerPage()<1)
+            throw new GitUserSearcherException("Per Page cannot be empty", GitUserSearcherCode.INVALID_REQUEST);
+    }
+
 
 }

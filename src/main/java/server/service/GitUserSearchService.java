@@ -51,18 +51,19 @@ public class GitUserSearchService {
     @Consumes({ MediaType.APPLICATION_JSON })
     public String getGitUserRepoInfo (String request) {
         GitRepoSearchResponse response = null;
-        System.out.println(request);
+
         try {
             GitRepoSearchRequest gitRepoSearchRequest = JSONSerializer.deserialize(request, GitRepoSearchRequest.class);
             response = gitHandler.getGitRepos(gitRepoSearchRequest);
 
         } catch (GitUserSearcherException gse) {
             LOG.error("An Exception has occured in with error: " + gse.getMessage());
-            response = new GitRepoSearchResponse(gse.getErrorCode().toString(), gse.getMessage(), null);
+            response = new GitRepoSearchResponse(gse.getErrorCode().toString(), gse.getMessage()
+                    , null, 0);
         } catch (Exception e) {
             LOG.error("An Exception has occured in getUserRepoInfo API with error: " + e.getMessage());
             response = new GitRepoSearchResponse(GitUserSearcherCode.GENERAL_ERROR.toString()
-                    , e.getMessage(), null);
+                    , e.getMessage(), null, 0);
         }
 
         return JSONSerializer.serialize(response);

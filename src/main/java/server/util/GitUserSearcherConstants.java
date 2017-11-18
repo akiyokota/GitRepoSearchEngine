@@ -7,5 +7,9 @@ package server.util;
 public class GitUserSearcherConstants {
 
     //GitClient
-    public static final String USER_ID_PLACEHOLDER = "[USERID]";
+    public static final String SEARCH_CRITERIA_USERS = "users";
+    public static final String SEARCH_CRITERIA_REPOS = "repos";
+
+    public static final String URL_WHITESPACE = "%20";
+
 }

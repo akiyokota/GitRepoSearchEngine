@@ -12,19 +12,23 @@ import java.util.List;
 
 public class GitRepoSearchResponse extends ResponseBase {
     private List<GitRepoInfo> gitRepos;
+    private Integer repoCount;
 
     public GitRepoSearchResponse () {
         this.setStatus("");
         this.setMsg("");
         this.gitRepos = new LinkedList<GitRepoInfo>();
+        this.repoCount = 0;
     }
 
     public GitRepoSearchResponse (String status,
                                   String msg,
-                                  List<GitRepoInfo> gitRepos) {
+                                  List<GitRepoInfo> gitRepos,
+                                  Integer repoCount) {
         this.setMsg(msg);
         this.setStatus(status);
         this.gitRepos = gitRepos;
+        this.repoCount = repoCount;
     }
 
     public List<GitRepoInfo> getGitRepos() {
