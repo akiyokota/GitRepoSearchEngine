@@ -8,7 +8,7 @@ var app = angular.module('httpCaller', [
 
 app.factory('httpCallerFactory', function ($http) {
     return {
-        getUserRepoInfo: function (userId, callback) {
+        getUserRepoInfo: function (gitUserSearchRequest, callback) {
             var req = {
                 method: 'POST',
                 url: 'rest/service/getUserRepoInfo',
@@ -17,7 +17,7 @@ app.factory('httpCallerFactory', function ($http) {
                     'Accept': 'application/json'
                 },
                 data: {
-                    "userId": userId
+                    "userInput": gitUserSearchRequest.userId
                 }
             };
 

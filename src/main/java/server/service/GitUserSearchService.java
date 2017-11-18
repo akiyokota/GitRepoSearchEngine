@@ -51,7 +51,7 @@ public class GitUserSearchService {
     @Consumes({ MediaType.APPLICATION_JSON })
     public String getGitUserRepoInfo (String request) {
         GitRepoSearchResponse response = null;
-
+        System.out.println(request);
         try {
             GitRepoSearchRequest gitRepoSearchRequest = JSONSerializer.deserialize(request, GitRepoSearchRequest.class);
             response = gitHandler.getGitRepos(gitRepoSearchRequest);

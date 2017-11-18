@@ -43,15 +43,17 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
 
         /*** functions ***/
 
-        $scope.search = function(gitUserId) {
-            if(gitUserId==undefined || gitUserId==null || gitUserId=="") {
+        $scope.search = function(userInput) {
+            if(userInput==undefined || userInput==null || userInput=="") {
                 alert("Please type in an git user ID");
                 return;
             }
 
-            // var gitUserSearchRequest = new GitUserSearchRequest(gitUserId);
-            // alert("you typed in " + gitUserSearchRequest.getUserId());
-            httpCallerFactory.getUserRepoInfo(gitUserId, function(response) {
+            var inputArray = userInput.split(",").map(function(item) {
+                return item.trim();
+            });
+            var gitUserSearchRequest = new GitUserSearchRequest(inputArray);
+            httpCallerFactory.getUserRepoInfo(gitUserSearchRequest, function(response) {
                //alert(JSON.stringify(response));
                 if(response.status==200 && response.data !=null && response.data.status==="SUCCESS") {
                     var res = response.data;

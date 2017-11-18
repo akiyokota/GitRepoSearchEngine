@@ -2,26 +2,29 @@ package server.bindings.git;
 
 import server.util.JSONSerializer;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by ayokota on 11/16/17.
  */
 public class GitRepoSearchRequest {
-    private String userId;
+    private List<String> userInput;
 
     public GitRepoSearchRequest() {
-        this.userId = "";
+        this.userInput = new LinkedList<String>();
     }
 
-    public GitRepoSearchRequest(String userId) {
-        this.userId = userId;
+    public GitRepoSearchRequest(List<String>  userInput) {
+        this.userInput = userInput;
     }
 
-    public String getUserId() {
-        return userId;
+    public List<String> getUserInput() {
+        return userInput;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserInput(List<String> userInput) {
+        this.userInput = userInput;
     }
 
     @Override

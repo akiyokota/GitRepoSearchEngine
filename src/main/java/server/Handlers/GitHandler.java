@@ -10,6 +10,7 @@ import server.clients.GitClient;
 import server.enums.GitUserSearcherCode;
 import server.exceptions.GitUserSearcherException;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -27,7 +28,10 @@ public class GitHandler {
         GitRepoSearchResponse response = null;
 
         try {
-            List<GitRepoInfo> gitRepos = gitClient.getGitUserRepo(gitRepoSearchRequest.getUserId());
+            List<GitRepoInfo> gitRepos = new LinkedList<GitRepoInfo>();
+            for(String userId : gitRepoSearchRequest.getUserInput()) {
+                gitRepos.addAll(gitClient.getGitUserRepo(userId));
+            }
 
             if(gitRepos.size()<1) {
                 response = new GitRepoSearchResponse(GitUserSearcherCode.EMPTY_RESULT.toString()
