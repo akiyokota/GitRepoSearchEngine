@@ -132,6 +132,11 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
         };
 
         $scope.goToPage = function (page) {
+            if(page*$scope.orderPerPage > 1000) {
+                alert("Git only allow to retrieve first 1000 search results :(");
+                return;
+            }
+
             $scope.gitUserSearchRequest.setPage(page);
             httpCallerFactory.getUserRepoInfo($scope.gitUserSearchRequest, function(response) {
                 //alert(JSON.stringify(response));
