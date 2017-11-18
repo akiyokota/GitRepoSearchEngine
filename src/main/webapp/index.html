@@ -22,6 +22,7 @@
     <!-- javascripts -->
     <script src="src/modules/main/main.js"></script>
     <script src="src/modules/httpCaller/httpCaller.js"></script>
+    <script src="src/modules/factories/objectFactory.js"></script>
 
 
 </head>
@@ -37,56 +38,59 @@
     <div class="bodyContainer">
         <p>Type in the git user name (seperate by comma if multiple) below and click search to see their repositories!</p>
 
+        <!--User input searching area-->
         <div class="search">
-            <input ng-model="gitUserId">
-            <button ng-click="search(gitUserId)">Search</button>
+            <input ng-model="userInput" ng-enter="search(userInput)">
+            <button ng-click="search(userInput)">Search</button>
             <button ng-click="gitRepos=[]; gitUserId=''">Clear</button>
-
         </div>
 
+        <!--simple configuration area-->
+        Searching Criteria:
+        <select ng-model="searchCriteria" ng-options="criteria for criteria in searchCriterias"></select>
+        | Reposotiry Per Page: <input type="number" ng-model="orderPerPage" />
+
+        <hr>
+
+        <!--search result area, only show when there is result-->
         <div ng-show="gitRepos.length>0">
 
-            <button ng-disabled="(currentPage+1) < 2" ng-click="previousPage()">
-                Previous
-            </button>
-            {{ getCurrentPage(filterKeyword) }}{{currentPage+1}}/{{numberOfPages(filterKeyword)}}
-            <button ng-disabled="(currentPage+1) >= numberOfPages()" ng-click="nextPage()">
-                Next
-            </button>
-            Reposotiry Per Page:
-            <select ng-model="orderPerPage" ng-options="pageOption for pageOption in orderPerPageOptions"></select>
-
-            <br>
-            Result filter: <input ng-model="filterKeyword">
-
+            <button ng-click="generatePagePortals(constants.pagePortalLeftShift)"
+                    ng-disabled="pagePortals[0]===1"> < </button>
+            <span ng-repeat="i in pagePortals">
+                <button ng-click="goToPage(i)" ng-style="{ color: addStyleToSelectedPage(i) }">{{ i }}</button>
+            </span>
+            <button ng-click="generatePagePortals(constants.pagePortalRightShift)"
+                    ng-disabled="pagePortals[pagePortals.length-1]>=numPages"> > </button>
             <table class="gitRepo">
                 <thead>
-                <th ng-click="changeSortFilter(constants.colRespositoryName)">
+                <!--<th ng-click="changeSortFilter(constants.colRespositoryName)">-->
+                <th>
                     Repository Name
-                    <span ng-show="sortType=='{{constants.colRespositoryName}}' && sortReverse">&#8593;</span>
-                    <span ng-show="sortType=='{{constants.colRespositoryName}}' && !sortReverse">&#8595;</span>
+                    <!--<span ng-show="sortType=='{{constants.colRespositoryName}}' && sortReverse">&#8593;</span>-->
+                    <!--<span ng-show="sortType=='{{constants.colRespositoryName}}' && !sortReverse">&#8595;</span>-->
                 </th>
-                <th ng-click="changeSortFilter(constants.colRepositoryUrl)">
-                    Repository URL
-                    <span ng-show="sortType=='{{constants.colRepositoryUrl}}' && sortReverse">&#8593;</span>
-                    <span ng-show="sortType=='{{constants.colRepositoryUrl}}' && !sortReverse">&#8595;</span>
+                <!--<th ng-click="changeSortFilter(constants.colRepositoryUrl)">-->
+                <th>
+                Repository URL
+                    <!--<span ng-show="sortType=='{{constants.colRepositoryUrl}}' && sortReverse">&#8593;</span>-->
+                    <!--<span ng-show="sortType=='{{constants.colRepositoryUrl}}' && !sortReverse">&#8595;</span>-->
                 </th>
-                <th ng-click="changeSortFilter(constants.colOwnerName)">
+                <!--<th ng-click="changeSortFilter(constants.colOwnerName)">-->
+                <th>
                     Owner name
-                    <span ng-show="sortType=='{{constants.colOwnerName}}' && sortReverse">&#8593;</span>
-                    <span ng-show="sortType=='{{constants.colOwnerName}}' && !sortReverse">&#8595;</span>
+                    <!--<span ng-show="sortType=='{{constants.colOwnerName}}' && sortReverse">&#8593;</span>-->
+                    <!--<span ng-show="sortType=='{{constants.colOwnerName}}' && !sortReverse">&#8595;</span>-->
                 </th>
-                <th ng-click="changeSortFilter(onstants.colOwnerAvatar)">
+                <!--<th ng-click="changeSortFilter(onstants.colOwnerAvatar)">-->
+                <th>
                     Owner Avatar
-                    <span ng-show="sortType=='{{constants.colOwnerAvatar}}' && sortReverse">&#8593;</span>
-                    <span ng-show="sortType=='{{constants.colOwnerAvatar}}' && !sortReverse">&#8595;</span>
+                    <!--<span ng-show="sortType=='{{constants.colOwnerAvatar}}' && sortReverse">&#8593;</span>-->
+                    <!--<span ng-show="sortType=='{{constants.colOwnerAvatar}}' && !sortReverse">&#8595;</span>-->
                 </th>
                 </thead>
                 <tbody>
-                <tr ng-repeat="gitRepo in gitRepos
-                                | resultFilter: filterKeyword
-                                | orderBy:sortType:sortReverse
-                                | limitTo: orderPerPage : ( currentPage *  orderPerPage )">
+                <tr ng-repeat="gitRepo in gitRepos">
                     <td>{{gitRepo.name}}</td>
                     <td><a ng-click="openLink(gitRepo.html_url)">{{gitRepo.html_url}}</a></td>
                     <td>{{gitRepo.owner.login}}</td>

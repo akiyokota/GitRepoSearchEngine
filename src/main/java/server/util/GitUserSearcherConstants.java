@@ -8,7 +8,7 @@ public class GitUserSearcherConstants {
 
     //GitClient
     public static final String SEARCH_CRITERIA_USERS = "users";
-    public static final String SEARCH_CRITERIA_REPOS = "repos";
+    public static final String SEARCH_CRITERIA_REPOS = "repositories";
 
     public static final String URL_WHITESPACE = "%20";
 

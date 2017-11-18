@@ -17,7 +17,10 @@ app.factory('httpCallerFactory', function ($http) {
                     'Accept': 'application/json'
                 },
                 data: {
-                    "userInput": gitUserSearchRequest.userId
+                    "userInput": gitUserSearchRequest.userInput,
+                    "searchCriteria" : gitUserSearchRequest.searchCriteria,
+                    "page" : gitUserSearchRequest.page,
+                    "perPage": gitUserSearchRequest.perPage
                 }
             };
 

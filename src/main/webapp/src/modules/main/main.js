@@ -4,7 +4,8 @@
 var app = angular.module('main', [
     'ui.router',
     'angular-loading-bar',
-    'httpCaller'
+    'httpCaller',
+    'objectFactory'
 ]);
 
 app.config(['$httpProvider', function ($httpProvider) {
@@ -20,27 +21,39 @@ app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
 }]);
 
-app.constant('mainConsts', {
+app.constant('mainConstant', {
     colRespositoryName: "repoName",
     colRepositoryUrl: "repoUrl",
     colOwnerName: "ownerName",
-    colOwnerAvatar: "ownerAvatar"
+    colOwnerAvatar: "ownerAvatar",
+
+    searchCriteriaUsers : "users",
+    searchCriteriaRepos : "repositories",
+
+    numPagePortals : 5,
+
+    pagePortalLeftShift : "<",
+    pagePortalRightShift : ">",
+    pagePortalInit : "init"
 });
 
-app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'httpCallerFactory', '$window', 'mainConsts'
-    , '$filter'
-    , function ($scope, $http, GitUserSearchRequest, httpCallerFactory, $window, mainConsts, $filter) {
+app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'httpCallerFactory', '$window', 'mainConstant'
+    , function ($scope, $http, GitUserSearchRequest, httpCallerFactory, $window, mainConstant ) {
 
         /*** variables ***/
-
+        $scope.userInput;
         $scope.gitRepos = [];
-        $scope.constants = mainConsts;
+        $scope.constants = mainConstant;
         $scope.sortType = $scope.constants.colRespositoryName;
         $scope.sortReverse = false;
         $scope.currentPage = 0;
-        $scope.orderPerPageOptions = [5, 10, 20, 50, 100];
-        $scope.orderPerPage = $scope.orderPerPageOptions[0];
-
+        $scope.orderPerPage = 5;
+        $scope.numPages = 0;
+        $scope.searchCriterias = [$scope.constants.searchCriteriaUsers, $scope.constants.searchCriteriaRepos];
+        $scope.searchCriteria = $scope.searchCriterias[0];
+        $scope.pagePortals = [];
+        $scope.numPagePortals = $scope.constants.numPagePortals;
+        $scope.gitUserSearchRequest = undefined;
         /*** functions ***/
 
         $scope.search = function(userInput) {
@@ -49,16 +62,17 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
                 return;
             }
 
-            var inputArray = userInput.split(",").map(function(item) {
-                return item.trim();
-            });
-            var gitUserSearchRequest = new GitUserSearchRequest(inputArray);
-            httpCallerFactory.getUserRepoInfo(gitUserSearchRequest, function(response) {
+            $scope.gitUserSearchRequest = new GitUserSearchRequest(userInput.trim(), $scope.searchCriteria,
+                                                                    1, $scope.orderPerPage );
+            httpCallerFactory.getUserRepoInfo($scope.gitUserSearchRequest, function(response) {
                //alert(JSON.stringify(response));
                 if(response.status==200 && response.data !=null && response.data.status==="SUCCESS") {
                     var res = response.data;
                     //alert(JSON.stringify(res.gitRepos));
                     $scope.gitRepos = res.gitRepos;
+                    $scope.numPages = Math.ceil(res.repoCount / $scope.orderPerPage) ;
+                    $scope.currentPage = 1;
+                    $scope.generatePagePortals($scope.constants.pagePortalInit);
                 } else {
                     if(response.data !=null) {
                         alert(response.data.msg);
@@ -78,66 +92,76 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             }
         };
 
-        $scope.changeSortFilter = function (column) {
-            try {
-                if ($scope.sortType == column) {
-                    $scope.sortReverse = !$scope.sortReverse;
-                } else {
-                    $scope.sortType = column;
-                    $scope.sortReverse = false;
+        $scope.clear = function () {
+            $scope.gitRepos=[];
+            $scope.userInput='';
+            $scope.currentPage = 0;
+            $scope.numPages = 0;
+        };
+
+        $scope.getNumber = function(num) {
+            return new Array(num);
+        };
+
+        $scope.generatePagePortals = function (shift) {
+            var newPagePortals = [];
+            if(shift===$scope.constants.pagePortalInit) {
+                for (var i = 1; i <= Math.min($scope.numPages, $scope.numPagePortals); i++) {
+                    newPagePortals.push(i);
                 }
-            } catch (error) {
-                var message = "An error has occured in changeSortFilter: " +  error;
-                alert(message);
+            } else if (shift === $scope.constants.pagePortalLeftShift) {
+                for(var i = 0; i < $scope.pagePortals.length; i++) {
+                    var newPageNumber = $scope.pagePortals[i] - $scope.numPagePortals;
+                    newPagePortals.push(newPageNumber);
+                }
+                if(newPagePortals.length < $scope.numPagePortals) {
+                    var numMissingPagePortals = $scope.numPagePortals - newPagePortals.length;
+                    for(var i = 0; i < numMissingPagePortals; i++) {
+                        newPagePortals.push(newPagePortals[newPagePortals.length-1] + 1);
+                    }
+                }
+            } else if (shift === $scope.constants.pagePortalRightShift) {
+                for(var i = 0; i < $scope.pagePortals.length; i++) {
+                    var newPageNumber = $scope.pagePortals[i] + $scope.numPagePortals;
+                    if(newPageNumber > $scope.numPages)
+                        break;
+                    newPagePortals.push(newPageNumber);
+                }
             }
+            $scope.pagePortals = newPagePortals;
         };
 
-        $scope.getCurrentPage = function (filterKeyword) {
-            if ($scope.numberOfPages(filterKeyword) < $scope.currentPage) {
-                $scope.currentPage = 0;
-            }
+        $scope.goToPage = function (page) {
+            $scope.gitUserSearchRequest.setPage(page);
+            httpCallerFactory.getUserRepoInfo($scope.gitUserSearchRequest, function(response) {
+                //alert(JSON.stringify(response));
+                if(response.status==200 && response.data !=null && response.data.status==="SUCCESS") {
+                    var res = response.data;
+                    //alert(JSON.stringify(res.gitRepos));
+                    $scope.gitRepos = res.gitRepos;
+                    $scope.currentPage = page;
+                } else {
+                    if(response.data !=null) {
+                        alert(response.data.msg);
+                    } else {
+                        alert("An error has been returned from server with status:" + response.status);
+                    }
+                }
+
+            });
         };
 
-        $scope.previousPage = function () {
-            $scope.currentPage = $scope.currentPage - 1;
+        // styles related
+        $scope.addStyleToSelectedPage = function (pageNumber) {
+            if(pageNumber === $scope.currentPage)
+                return "#FF0000";
+            else
+                return "#000000";
         };
 
-        $scope.nextPage = function () {
-            $scope.currentPage = $scope.currentPage + 1;
-        };
-
-        $scope.numberOfPages = function (filterKeyword) {
-            var filteredRepo = $filter('resultFilter')($scope.gitRepos, filterKeyword);
-            return $scope.calcPages(filteredRepo.length, $scope.orderPerPage);
-        };
-
-        $scope.calcPages = function (totalOrders, orderPerPage) {
-            var numPages = 0;
-
-            try {
-                numPages = Math.ceil(totalOrders / orderPerPage);
-            } catch (error) {
-
-            }
-
-            return numPages;
-        }
     }]);
 
-app.factory('GitUserSearchRequest', function () {
 
-    function GitUserSearchRequest(userId) {
-        this.userId = userId;
-    };
-
-    GitUserSearchRequest.prototype = {
-        getUserId : function() {
-            return ( this.userId );
-        }
-    };
-
-    return GitUserSearchRequest;
-});
 
 app.filter('resultFilter', [ function () {
     return function (input, filterKeyword) {
@@ -165,3 +189,17 @@ app.filter('resultFilter', [ function () {
         return result;
     };
 }]);
+
+app.directive('ngEnter', function() {
+    return function(scope, element, attrs) {
+        element.bind("keydown keypress", function(event) {
+            if(event.which === 13) {
+                scope.$apply(function(){
+                    scope.$eval(attrs.ngEnter, {'event': event});
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
