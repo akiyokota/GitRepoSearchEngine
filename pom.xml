@@ -8,7 +8,7 @@
     <artifactId>GitUserSearcher</artifactId>
     <packaging>war</packaging>
     <version>1.0</version>
-    <name>Git User Searcher</name>
+    <name>Git Repo Search Engine</name>
 
 
     <!-- Global Variables -->
@@ -178,7 +178,7 @@
 
     <!-- Build Set up -->
     <build>
-        <finalName>GitUserSearcher</finalName>
+        <finalName>gitRepoSearchEngine</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -226,6 +226,9 @@
                                 <delete file="${project.build.outputDirectory}/log4j.properties"/>
                                 <copy file="${basedir}/src/main/resources/log4j.properties"
                                       tofile="${project.build.outputDirectory}/log4j.properties"/>
+                                <delete file="${project.build.outputDirectory}/gitUserSearcher.properties"/>
+                                <copy file="${basedir}/src/main/resources/gitUserSearcher.properties"
+                                      tofile="${project.build.outputDirectory}/gitUserSearcher.properties"/>
                             </tasks>
                         </configuration>
                     </execution>
