@@ -36,7 +36,6 @@
     </div>
 
     <div class="bodyContainer">
-        <p>Type in the git user name (seperate by comma if multiple) below and click search to see their repositories!</p>
 
         <!--User input searching area-->
         <div class="search">
@@ -48,20 +47,46 @@
         <!--simple configuration area-->
         Searching Criteria:
         <select ng-model="searchCriteria" ng-options="criteria for criteria in searchCriterias"></select>
-        | Reposotiry Per Page: <input type="number" ng-model="orderPerPage" />
+        | Reposotiry Per Page: <input type="number" ng-model="orderPerPage"/>
 
+
+        <!--advanced configuration area-->
+        <div class="advancedConfig">
+            <div ng-show="hideAdvancedConfiguration==true">
+                <a ng-click="hideAdvancedConfiguration=false">
+                    Show Advanced Searching Configurations
+                </a>
+            </div>
+            <div ng-show="hideAdvancedConfiguration==false">
+                <a ng-click="hideAdvancedConfiguration=true">
+                    Hide Advanced Searching Configurations
+                </a>
+
+                <div ng-show="searchCriteria===constants.searchCriteriaRepos
+                    || searchCriteria===constants.searchCriteriaNumStars">
+                    Select Languages of Choice Your Search Result: <br>
+                    <span ng-repeat="language in constants.languageList">
+                        <input type="checkbox" ng-click="modifyLanguageFilter(language, languageValue)"
+                               ng-model="languageValue"  ng-true-value="true" ng-false-value="false" > {{language}}
+                    </span>
+                </div>
+
+            </div>
+        </div>
         <hr>
 
         <!--search result area, only show when there is result-->
         <div ng-show="gitRepos.length>0">
 
             <button ng-click="generatePagePortals(constants.pagePortalLeftShift)"
-                    ng-disabled="pagePortals[0]===1"> < </button>
+                    ng-disabled="pagePortals[0]===1"> <
+            </button>
             <span ng-repeat="i in pagePortals">
                 <button ng-click="goToPage(i)" ng-style="{ color: addStyleToSelectedPage(i) }">{{ i }}</button>
             </span>
             <button ng-click="generatePagePortals(constants.pagePortalRightShift)"
-                    ng-disabled="pagePortals[pagePortals.length-1]>=numPages"> > </button>
+                    ng-disabled="pagePortals[pagePortals.length-1]>=numPages"> >
+            </button>
             <table class="gitRepo">
                 <thead>
                 <!--<th ng-click="changeSortFilter(constants.colRespositoryName)">-->
@@ -72,7 +97,7 @@
                 </th>
                 <!--<th ng-click="changeSortFilter(constants.colRepositoryUrl)">-->
                 <th>
-                Repository URL
+                    Repository URL
                     <!--<span ng-show="sortType=='{{constants.colRepositoryUrl}}' && sortReverse">&#8593;</span>-->
                     <!--<span ng-show="sortType=='{{constants.colRepositoryUrl}}' && !sortReverse">&#8595;</span>-->
                 </th>

@@ -7,11 +7,12 @@ var app = angular.module('objectFactory', [
 
 app.factory('GitUserSearchRequest', function () {
 
-    function GitUserSearchRequest(userInput, searchCriteria, page, perPage) {
+    function GitUserSearchRequest(userInput, searchCriteria, page, perPage, languageFilterList) {
         this.userInput = userInput;
         this.searchCriteria = searchCriteria;
         this.page = page;
         this.perPage = perPage;
+        this.languageFilterList = languageFilterList;
     };
 
     GitUserSearchRequest.prototype = {
@@ -26,6 +27,9 @@ app.factory('GitUserSearchRequest', function () {
         },
         getperPage : function () {
             return ( this.perPage );
+        },
+        getLanguageFilterList: function () {
+            return ( this.languageFilterList );
         },
         setPage : function (page) {
             this.page = page;

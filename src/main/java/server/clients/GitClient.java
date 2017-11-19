@@ -55,11 +55,24 @@ public class GitClient {
         return client.resource(requestEndpoint);
     }
 
-    public GitRepoSearchResult getGitRepoSearchWithKeywords(GitRepoSearchRequest gitRepoSearchRequest) {
+    public GitRepoSearchResult getGitRepoSearch (GitRepoSearchRequest gitRepoSearchRequest) {
         GitRepoSearchResult response = null;
 
         try {
-            String requestEndPoint = getGitRepoSearchWithKeywordsUrl(gitRepoSearchRequest);
+            String requestEndPoint = "";
+
+            switch(gitRepoSearchRequest.getSearchCriteria()) {
+                case GitUserSearcherConstants.SEARCH_CRITERIA_REPOS:
+                    requestEndPoint = getGitRepoSearchWithKeywordsUrl(gitRepoSearchRequest);
+                    break;
+                case  GitUserSearcherConstants.SEARCH_CRITERIA_NUM_STARS:
+                    requestEndPoint = getGitRepoSearchWithNumStars(gitRepoSearchRequest);
+                    break;
+                default:
+                    throw new GitUserSearcherException("Searching Criteria not recognized",
+                            GitUserSearcherCode.INVALID_REQUEST);
+            }
+            System.out.println(requestEndPoint);
             WebResource resource = getWebResource(requestEndPoint);
 
             String responseJson = resource.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
@@ -79,8 +92,33 @@ public class GitClient {
         url.append(gitApiUrl).append(searchRepoApi)
                 .append("?q=")
                 .append(gitRepoSearchRequest.getUserInput().
-                        replaceAll(" ", GitUserSearcherConstants.URL_WHITESPACE))
-                .append("&page=").append(gitRepoSearchRequest.getPage())
+                        replaceAll(" ", GitUserSearcherConstants.URL_WHITESPACE));
+
+        url.append(buildLanguageFilterAndPagination(gitRepoSearchRequest));
+        return url.toString();
+    }
+
+    private String getGitRepoSearchWithNumStars (GitRepoSearchRequest gitRepoSearchRequest) {
+        StringBuilder url = new StringBuilder();
+        url.append(gitApiUrl).append(searchRepoApi)
+                .append("?q=stars%3A")
+                .append(gitRepoSearchRequest.getUserInput());
+
+        url.append(buildLanguageFilterAndPagination(gitRepoSearchRequest));
+        return url.toString();
+    }
+
+    private String buildLanguageFilterAndPagination (GitRepoSearchRequest gitRepoSearchRequest) {
+        StringBuilder url = new StringBuilder();
+
+        List<String> languageFilterList = gitRepoSearchRequest.getLanguageFilterList();
+        if(languageFilterList!=null) {
+            for(String language : languageFilterList) {
+                url.append("+language%3A").append(language);
+            }
+        }
+
+        url.append("&page=").append(gitRepoSearchRequest.getPage())
                 .append("&per_page=").append(gitRepoSearchRequest.getPerPage());
         return url.toString();
     }

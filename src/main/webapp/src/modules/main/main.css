@@ -61,3 +61,8 @@
     background-color: #cccccc;
     color: #666666;
 }
+
+.advancedConfig a {
+    color: blue;
+    text-decoration: underline;
+}

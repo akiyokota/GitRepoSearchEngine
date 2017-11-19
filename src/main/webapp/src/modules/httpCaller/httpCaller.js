@@ -20,7 +20,8 @@ app.factory('httpCallerFactory', function ($http) {
                     "userInput": gitUserSearchRequest.userInput,
                     "searchCriteria" : gitUserSearchRequest.searchCriteria,
                     "page" : gitUserSearchRequest.page,
-                    "perPage": gitUserSearchRequest.perPage
+                    "perPage": gitUserSearchRequest.perPage,
+                    "languageFilterList": gitUserSearchRequest.languageFilterList
                 }
             };
 

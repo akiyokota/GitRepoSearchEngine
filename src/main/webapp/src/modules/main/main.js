@@ -29,12 +29,30 @@ app.constant('mainConstant', {
 
     searchCriteriaUsers : "users",
     searchCriteriaRepos : "repositories",
+    searchCriteriaNumStars : "numStars",
 
     numPagePortals : 5,
 
     pagePortalLeftShift : "<",
     pagePortalRightShift : ">",
-    pagePortalInit : "init"
+    pagePortalInit : "init",
+
+    languageList: [
+        "JavaScript",
+        "Python",
+        "Java",
+        "Ruby",
+        "PHP",
+        "C++",
+        "CSS",
+        "C#",
+        "GO",
+        "C",
+        "TypeScript",
+        "Shell",
+        "Swift",
+        "Scala"
+    ]
 });
 
 app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'httpCallerFactory', '$window', 'mainConstant'
@@ -49,11 +67,15 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
         $scope.currentPage = 0;
         $scope.orderPerPage = 5;
         $scope.numPages = 0;
-        $scope.searchCriterias = [$scope.constants.searchCriteriaUsers, $scope.constants.searchCriteriaRepos];
+        $scope.searchCriterias = [$scope.constants.searchCriteriaUsers,
+            $scope.constants.searchCriteriaRepos,
+            $scope.constants.searchCriteriaNumStars];
         $scope.searchCriteria = $scope.searchCriterias[0];
         $scope.pagePortals = [];
         $scope.numPagePortals = $scope.constants.numPagePortals;
         $scope.gitUserSearchRequest = undefined;
+        $scope.hideAdvancedConfiguration = true;
+        $scope.languageFilterList = [];
         /*** functions ***/
 
         $scope.search = function(userInput) {
@@ -62,8 +84,13 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
                 return;
             }
 
+            if($scope.searchCriteria === $scope.constants.searchCriteriaNumStars && parseInt(userInput) != userInput) {
+                alert("You must type in an integer when searching with number of stars");
+                return;
+            }
+
             $scope.gitUserSearchRequest = new GitUserSearchRequest(userInput.trim(), $scope.searchCriteria,
-                                                                    1, $scope.orderPerPage );
+                                                                    1, $scope.orderPerPage, $scope.languageFilterList );
             httpCallerFactory.getUserRepoInfo($scope.gitUserSearchRequest, function(response) {
                //alert(JSON.stringify(response));
                 if(response.status==200 && response.data !=null && response.data.status==="SUCCESS") {
@@ -97,6 +124,7 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             $scope.userInput='';
             $scope.currentPage = 0;
             $scope.numPages = 0;
+            $scope.languageFilterList = [];
         };
 
         $scope.getNumber = function(num) {
@@ -156,6 +184,17 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             });
         };
 
+        $scope.modifyLanguageFilter = function (language, languageValue) {
+            if(languageValue==true) {
+                $scope.languageFilterList.push(language);
+            } else {
+                var index = $scope.languageFilterList.indexOf(language);
+                if(index!== -1) {
+                    $scope.languageFilterList.splice(index, 1);
+                }
+            }
+        };
+
         // styles related
         $scope.addStyleToSelectedPage = function (pageNumber) {
             if(pageNumber === $scope.currentPage)
@@ -163,6 +202,7 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             else
                 return "#000000";
         };
+
 
     }]);
 

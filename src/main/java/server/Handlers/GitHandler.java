@@ -36,8 +36,9 @@ public class GitHandler {
 
               switch(gitRepoSearchRequest.getSearchCriteria()) {
                   case GitUserSearcherConstants.SEARCH_CRITERIA_REPOS:
+                  case GitUserSearcherConstants.SEARCH_CRITERIA_NUM_STARS:
                       GitRepoSearchResult gitRepoSearchResult =
-                              gitClient.getGitRepoSearchWithKeywords(gitRepoSearchRequest);
+                              gitClient.getGitRepoSearch(gitRepoSearchRequest);
                       repoCount = gitRepoSearchResult.getTotal_count();
                       repoList = gitRepoSearchResult.getItems();
                       break;
