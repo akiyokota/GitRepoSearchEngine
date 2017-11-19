@@ -39,15 +39,25 @@
 
         <!--User input searching area-->
         <div class="search">
-            <input ng-model="userInput" ng-enter="search(userInput)">
+            <input ng-model="userInput" ng-enter="search(userInput)"
+                ng-hide="searchCriteria===constants.searchCriteriaNumStars && queryWithRange==true">
+            <span ng-show="searchCriteria===constants.searchCriteriaNumStars && queryWithRange==true">
+                <input style="width: 100px" type="number" ng-model="fromNumStars">
+                to
+                <input style="width: 100px" type="number" ng-model="toNumStars">
+            </span>
             <button ng-click="search(userInput)">Search</button>
-            <button ng-click="gitRepos=[]; gitUserId=''">Clear</button>
+            <button ng-click="clear()">Clear</button>
         </div>
 
         <!--simple configuration area-->
         Searching Criteria:
         <select ng-model="searchCriteria" ng-options="criteria for criteria in searchCriterias"></select>
         | Reposotiry Per Page: <input type="number" ng-model="orderPerPage"/>
+        <span ng-show=" searchCriteria===constants.searchCriteriaNumStars">
+            | Use Range <input type="checkbox" ng-model="queryWithRange"
+                               ng-true-value="true" ng-false-value="false">
+        </span>
 
 
         <!--advanced configuration area-->

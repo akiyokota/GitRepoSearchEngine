@@ -76,20 +76,32 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
         $scope.gitUserSearchRequest = undefined;
         $scope.hideAdvancedConfiguration = true;
         $scope.languageFilterList = [];
+        $scope.fromNumStars = 0;
+        $scope.toNumStars = 0;
+        $scope.queryWithRange = false;
         /*** functions ***/
 
         $scope.search = function(userInput) {
-            if(userInput==undefined || userInput==null || userInput=="") {
-                alert("Please type in an git user ID");
+            if((userInput==undefined || userInput==null || userInput=="") &&
+                !($scope.searchCriteria === $scope.constants.searchCriteriaNumStars && $scope.queryWithRange == true)) {
+                alert("The input box cannot be empty!");
                 return;
             }
+
+            var input;
+            if(userInput!=undefined && userInput!=null)
+                input = userInput.trim();
 
             if($scope.searchCriteria === $scope.constants.searchCriteriaNumStars && parseInt(userInput) != userInput) {
                 alert("You must type in an integer when searching with number of stars");
                 return;
             }
 
-            $scope.gitUserSearchRequest = new GitUserSearchRequest(userInput.trim(), $scope.searchCriteria,
+            if($scope.searchCriteria === $scope.constants.searchCriteriaNumStars && $scope.queryWithRange == true) {
+                input = $scope.fromNumStars + ".." + $scope.toNumStars;
+            }
+
+            $scope.gitUserSearchRequest = new GitUserSearchRequest(input, $scope.searchCriteria,
                                                                     1, $scope.orderPerPage, $scope.languageFilterList );
             httpCallerFactory.getUserRepoInfo($scope.gitUserSearchRequest, function(response) {
                //alert(JSON.stringify(response));
@@ -124,7 +136,8 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             $scope.userInput='';
             $scope.currentPage = 0;
             $scope.numPages = 0;
-            $scope.languageFilterList = [];
+            $scope.fromNumStars = 0;
+            $scope.toNumStars = 0;
         };
 
         $scope.getNumber = function(num) {
