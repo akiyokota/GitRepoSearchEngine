@@ -11,6 +11,7 @@ public class GitUserSearcherConstants {
     public static final String SEARCH_CRITERIA_REPOS = "repositories";
     public static final String SEARCH_CRITERIA_NUM_STARS = "numStars";
 
+    //generic
     public static final String URL_WHITESPACE = "%20";
 
 }

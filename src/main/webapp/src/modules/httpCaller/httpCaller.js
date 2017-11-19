@@ -8,6 +8,13 @@ var app = angular.module('httpCaller', [
 
 app.factory('httpCallerFactory', function ($http) {
     return {
+        /**
+         * This function calls gitUserRepoInfo API via HTTP POST request
+         *
+         * @param gitUserSearchRequest : request parameters for gitUserRepoInfo API
+         *
+         * @return callback : return back to caller with the callback information
+         */
         getUserRepoInfo: function (gitUserSearchRequest, callback) {
             var req = {
                 method: 'POST',

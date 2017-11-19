@@ -32,6 +32,9 @@ public class GitUserSearchService {
         LOG.error("Initializing");
     }
 
+    /**
+     * Ping: to determine if a JVM is up and running
+     */
     @GET
     @Path("/ping")
     public String ping() {
@@ -39,19 +42,29 @@ public class GitUserSearchService {
         return PING_STATUS;
     }
 
+    /**
+     * HealthCheck: usually for load balancer to determine which JVM is up for the rotation
+     */
     @GET
     @Path("/healthCheck")
     public String healthCheck() {
         return HEALTH_CHECK;
     }
 
+    /**
+     * This function takes git search requests and return search response
+     *
+     * @param gitRepoSearchRequest : incoming request for git search API in JSON form
+     *
+     * @return String : git search response. including repositories and total repo counts in JSON form
+     */
     @POST
     @Path("/getUserRepoInfo")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
     public String getGitUserRepoInfo (String request) {
         GitRepoSearchResponse response = null;
-        System.out.println(request);
+
         try {
             GitRepoSearchRequest gitRepoSearchRequest = JSONSerializer.deserialize(request, GitRepoSearchRequest.class);
             response = gitHandler.getGitRepos(gitRepoSearchRequest);

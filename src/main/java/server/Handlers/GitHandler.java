@@ -25,6 +25,13 @@ public class GitHandler {
     @Autowired
     private GitClient gitClient;
 
+    /**
+     * This function takes git search requests and return search response
+     *
+     * @param gitRepoSearchRequest : incoming request for git search API
+     *
+     * @return GitRepoSearchResponse : git search response. including repositories and total repo counts
+     */
     public GitRepoSearchResponse getGitRepos (GitRepoSearchRequest gitRepoSearchRequest) {
         GitRepoSearchResponse response = null;
 
@@ -73,6 +80,12 @@ public class GitHandler {
         return response;
     }
 
+    /**
+     * This function checks if incoming request for git search API is valid
+     *
+     * @param gitRepoSearchRequest : incoming request for git search API
+     *
+     */
     private void validateRequest (GitRepoSearchRequest gitRepoSearchRequest) {
         if(gitRepoSearchRequest==null)
             throw new GitUserSearcherException("Request cannot be empty", GitUserSearcherCode.INVALID_REQUEST);

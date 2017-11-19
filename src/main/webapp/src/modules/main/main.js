@@ -81,6 +81,20 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
         $scope.queryWithRange = false;
         /*** functions ***/
 
+        /**
+         * This is attached to search button on the main page, this function triggers
+         * the call to back end and retrieve the git repository search information
+         *
+         * @param userInput : the input from the user on the main page
+         *
+         * @return callback : None, but it will populate gitRepos (list of repositories)
+         *                    calculate total number of pages and set to numPages
+         *                    reinitialize current page to 1
+         *                    initialize page portals.
+         *
+         *                    In case of error from back end server, this will pop an
+         *                    message with error message on it.
+         */
         $scope.search = function(userInput) {
             if((userInput==undefined || userInput==null || userInput=="") &&
                 !($scope.searchCriteria === $scope.constants.searchCriteriaNumStars && $scope.queryWithRange == true)) {
@@ -123,6 +137,15 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             });
         };
 
+        /**
+         * This function is attached to every git repository link from the result.
+         * When user click on the link, it will ask them if they like to open the page
+         * in another browser. In case of yes, the browser will open another tab and
+         * display the page with the url.
+         *
+         * @param userInput : The url of the page that will be open
+         *
+         */
         $scope.openLink = function (linkUrl) {
             if ($window.confirm("Would you like to open up "
                     + linkUrl
@@ -131,6 +154,10 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             }
         };
 
+        /**
+         * This function is a soft reset for search result and configs.
+         * However, this does not reset advanced results.
+         */
         $scope.clear = function () {
             $scope.gitRepos=[];
             $scope.userInput='';
@@ -140,10 +167,14 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             $scope.toNumStars = 0;
         };
 
-        $scope.getNumber = function(num) {
-            return new Array(num);
-        };
-
+        /**
+         * This function generates pagination and portals
+         *
+         * @param shift : this determines to ship pageination portals to left right or initialization
+         *
+         * @return none : This function simply populates $scope.pagePortals with paging portals
+         *
+         */
         $scope.generatePagePortals = function (shift) {
             var newPagePortals = [];
             if(shift===$scope.constants.pagePortalInit) {
@@ -172,6 +203,12 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             $scope.pagePortals = newPagePortals;
         };
 
+        /**
+         * This function goes to a page from the search result
+         *
+         * @param page : the page user intends to go to.
+         *
+         */
         $scope.goToPage = function (page) {
             if(page*$scope.orderPerPage > 1000) {
                 alert("Git only allow to retrieve first 1000 search results :(");
@@ -197,6 +234,12 @@ app.controller('mainController', ['$scope', '$http', 'GitUserSearchRequest', 'ht
             });
         };
 
+        /**
+         * This function modifies language filter configurations for searching
+         *
+         * @param language : the string representation of name of the language
+         * @param languageValue : This determins to turn off or on depending on the value
+         */
         $scope.modifyLanguageFilter = function (language, languageValue) {
             if(languageValue==true) {
                 $scope.languageFilterList.push(language);

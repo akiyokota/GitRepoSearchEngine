@@ -46,6 +46,13 @@ public class GitClient {
 
     private Client client;
 
+    /**
+     * This function returns jersey restful client's resources created from given url
+     *
+     * @param requestEndpoint : this is a url which we are going to send out http requets to
+     *
+     * @return WebResource : jersey restful client's resources
+     */
     public WebResource getWebResource(String requestEndpoint) {
         if (client == null) {
             client = Client.create();
@@ -55,6 +62,13 @@ public class GitClient {
         return client.resource(requestEndpoint);
     }
 
+    /**
+     * This function takes in git search API request and return the search result
+     *
+     * @param gitRepoSearchRequest : incoming request for git search API
+     *
+     * @return WebResource : git search response including repo count, and repo details
+     */
     public GitRepoSearchResult getGitRepoSearch (GitRepoSearchRequest gitRepoSearchRequest) {
         GitRepoSearchResult response = null;
 
@@ -72,7 +86,7 @@ public class GitClient {
                     throw new GitUserSearcherException("Searching Criteria not recognized",
                             GitUserSearcherCode.INVALID_REQUEST);
             }
-            System.out.println(requestEndPoint);
+
             WebResource resource = getWebResource(requestEndPoint);
 
             String responseJson = resource.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
@@ -87,6 +101,13 @@ public class GitClient {
         return response;
     }
 
+    /**
+     * This function builds url for repository keyword search
+     *
+     * @param gitRepoSearchRequest : incoming request for git search API
+     *
+     * @return String : a url to query git
+     */
     private String getGitRepoSearchWithKeywordsUrl (GitRepoSearchRequest gitRepoSearchRequest) {
         StringBuilder url = new StringBuilder();
         url.append(gitApiUrl).append(searchRepoApi)
@@ -98,6 +119,13 @@ public class GitClient {
         return url.toString();
     }
 
+    /**
+     * This function builds url for repository number of star search
+     *
+     * @param gitRepoSearchRequest : incoming request for git search API
+     *
+     * @return String : a url to query git
+     */
     private String getGitRepoSearchWithNumStars (GitRepoSearchRequest gitRepoSearchRequest) {
         StringBuilder url = new StringBuilder();
         url.append(gitApiUrl).append(searchRepoApi)
@@ -108,6 +136,13 @@ public class GitClient {
         return url.toString();
     }
 
+    /**
+     * This function builds sub url for git query. This includes language filter and pagination
+     *
+     * @param gitRepoSearchRequest : incoming request for git search API
+     *
+     * @return String : a sub-url to query git includes language filter and pagination
+     */
     private String buildLanguageFilterAndPagination (GitRepoSearchRequest gitRepoSearchRequest) {
         StringBuilder url = new StringBuilder();
 
@@ -123,6 +158,13 @@ public class GitClient {
         return url.toString();
     }
 
+    /**
+     * This function takes in git user search API request and return the search result
+     *
+     * @param gitRepoSearchRequest : incoming request for git search API
+     *
+     * @return List<GitRepoInfo> : git search response including and repo details
+     */
     public List<GitRepoInfo> getGitUserRepo(GitRepoSearchRequest gitRepoSearchRequest) {
         List<GitRepoInfo> response = null;
 
@@ -144,6 +186,13 @@ public class GitClient {
         return response;
     }
 
+    /**
+     * This function builds url for git to search a users repository
+     *
+     * @param gitRepoSearchRequest : incoming request for git search API
+     *
+     * @return String : a url for git to search a users repository
+     */
     public String buildGitSearchUserRequest (GitRepoSearchRequest gitRepoSearchRequest) {
         StringBuilder url = new StringBuilder();
         url.append(buildRepoCountForUserUrl(gitRepoSearchRequest.getUserInput()))
@@ -152,7 +201,13 @@ public class GitClient {
         return url.toString();
     }
 
-
+    /**
+     * This function queries git for a user's repository count
+     *
+     * @param userId : incoming request for git search API
+     *
+     * @return Integer : number of repository this user own.
+     */
     public Integer getRepoCountForUser(String userId) {
         Integer response = 0;
 
@@ -174,6 +229,13 @@ public class GitClient {
         return response;
     }
 
+    /**
+     * This function builds url for git to search a users repository count
+     *
+     * @param userId : incoming request for git search API
+     *
+     * @return String : a url for git to search a users repository count
+     */
     private String buildRepoCountForUserUrl ( String userId) {
         StringBuilder url = new StringBuilder();
         url.append(gitApiUrl).append(searchUserApi).append("/").append(userId);
