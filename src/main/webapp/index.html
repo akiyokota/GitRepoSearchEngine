@@ -53,7 +53,7 @@
         <!--simple configuration area-->
         Searching Criteria:
         <select ng-model="searchCriteria" ng-options="criteria for criteria in searchCriterias"></select>
-        | Reposotiry Per Page: <input type="number" ng-model="orderPerPage"/>
+        | Reposotory Per Page: <input type="number" ng-model="orderPerPage"/>
         <span ng-show=" searchCriteria===constants.searchCriteriaNumStars">
             | Use Range <input type="checkbox" ng-model="queryWithRange"
                                ng-true-value="true" ng-false-value="false">
