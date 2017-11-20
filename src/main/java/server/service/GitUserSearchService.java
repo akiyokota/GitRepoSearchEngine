@@ -3,7 +3,7 @@ package server.service;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import server.Handlers.GitHandler;
+import server.handlers.GitHandler;
 import server.bindings.git.GitRepoSearchRequest;
 import server.bindings.git.GitRepoSearchResponse;
 import server.enums.GitUserSearcherCode;
