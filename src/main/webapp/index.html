@@ -71,6 +71,11 @@
                 <a ng-click="hideAdvancedConfiguration=true">
                     Hide Advanced Searching Configurations
                 </a>
+                <div ng-show="searchCriteria===constants.searchCriteriaUsers" >
+                    No Advanced Search Configuration implemented for User Search Yet.
+                    Please check out advanced search configuration for other search search criterias.
+                </div>
+
 
                 <div ng-show="searchCriteria===constants.searchCriteriaRepos
                     || searchCriteria===constants.searchCriteriaNumStars">
